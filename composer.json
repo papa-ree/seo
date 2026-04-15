@@ -1,12 +1,12 @@
 {
-    "name": "papa-ree/seo",
+    "name": "bale/seo",
     "description": "Seo tool for CMS",
     "keywords": [
         "bale",
         "laravel",
         "seo"
     ],
-    "homepage": "https://github.com/papa-ree/seo",
+    "homepage": "https://github.com/bale/seo",
     "license": "MIT",
     "authors": [
         {
