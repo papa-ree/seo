@@ -15,18 +15,33 @@ class SeoInstallCommand extends Command
     {
         $this->info('Installing Bale SEO...');
 
-        // 1. Publish Migration
-        $this->info('Publishing migrations...');
+        // 1. Publish Config
+        $this->info('Publishing configuration...');
         $this->call('vendor:publish', [
             '--provider' => 'Bale\Seo\SeoServiceProvider',
-            '--tag' => 'seo-migrations',
+            '--tag' => 'seo-config',
         ]);
 
-        // 2. Ask about routes
+        // 2. Publish Migration (Optional)
+        $publishMigration = $this->choice(
+            'Do you want to publish the SEO migrations?',
+            ['No', 'Yes'],
+            1 // Default to Yes
+        );
+
+        if ($publishMigration === 'Yes') {
+            $this->info('Publishing migrations...');
+            $this->call('vendor:publish', [
+                '--provider' => 'Bale\Seo\SeoServiceProvider',
+                '--tag' => 'seo-migrations',
+            ]);
+        }
+
+        // 3. Ask about routes
         $useRoutes = $this->choice(
             'Do you want to enable SEO routes (sitemap.xml and robots.txt)?',
             ['No', 'Yes'],
-            0
+            0 // Default to No
         );
 
         if ($useRoutes === 'Yes') {

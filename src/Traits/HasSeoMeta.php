@@ -99,7 +99,14 @@ trait HasSeoMeta
     public function getOgImage(): ?string
     {
         if ($this->seoMeta?->og_image) {
-            return $this->seoMeta->og_image;
+            $ogImage = $this->seoMeta->og_image;
+            if (str_starts_with($ogImage, 'http')) {
+                return $ogImage;
+            }
+            if (class_exists('Bale\Emperan\Support\Cdn')) {
+                return \Bale\Emperan\Support\Cdn::url('thumbnails/' . $ogImage);
+            }
+            return $ogImage;
         }
 
         // Fallback to thumbnail if exists
