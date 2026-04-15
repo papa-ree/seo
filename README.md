@@ -20,7 +20,7 @@ Bale SEO adalah package Laravel untuk mengelola metadata SEO, Open Graph, Twitte
 Anda dapat menginstal package ini via composer:
 
 ```bash
-composer require papa-ree/seo
+composer require bale/seo
 ```
 
 Setelah instalasi, jalankan perintah instalasi untuk mempublish migrasi dan melakukan konfigurasi awal:
@@ -30,6 +30,7 @@ php artisan seo:install
 ```
 
 Perintah ini akan:
+
 1. Mempublish file migrasi.
 2. Menanyakan apakah Anda ingin mengaktifkan route SEO (sitemap.xml dan robots.txt).
 3. Memperbarui file `.env` Anda dengan `SEO_USE_ROUTES`.
@@ -87,7 +88,7 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasSeoMeta;
-    
+
     // Opsional: tentukan sumber fallback untuk deskripsi
     public function getExcerpt($limit = 160)
     {
@@ -103,9 +104,9 @@ Gunakan komponen `<x-seo::seo-meta />` di dalam tag `<head>` layout Anda:
 ```html
 <head>
     <!-- Meta tags lainnya -->
-    
+
     <x-seo::seo-meta :model="$post" />
-    
+
     <!-- Atau dengan default values -->
     <x-seo::seo-meta :defaults="['title' => 'Custom Title']" />
 </head>
