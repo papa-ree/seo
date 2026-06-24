@@ -54,7 +54,7 @@ trait HasSeoMeta
 
         // Try to generate from content
         if (method_exists($this, 'getExcerpt')) {
-            return $this->getExcerpt(160);
+            return $this->getExcerpt(150);
         }
 
         if (isset($this->content)) {
@@ -64,11 +64,11 @@ trait HasSeoMeta
                 $text = collect($content['blocks'])
                     ->map(fn($block) => $block['data']['text'] ?? '')
                     ->implode(' ');
-                return Str::limit(strip_tags($text), 160);
+                return Str::limit(strip_tags($text), 150);
             }
 
             if (is_string($content)) {
-                return Str::limit(strip_tags($content), 160);
+                return Str::limit(strip_tags($content), 150);
             }
         }
 
@@ -80,8 +80,10 @@ trait HasSeoMeta
      */
     public function getOgTitle(): string
     {
-        return $this->seoMeta?->og_title
-            ?? $this->getSeoTitle();
+        $title = $this->seoMeta?->og_title ?? $this->getSeoTitle();
+
+        // Social media sweet spot is around 65 characters
+        return Str::limit($title, 65);
     }
 
     /**
@@ -89,8 +91,10 @@ trait HasSeoMeta
      */
     public function getOgDescription(): string
     {
-        return $this->seoMeta?->og_description
-            ?? $this->getSeoDescription();
+        $desc = $this->seoMeta?->og_description ?? $this->getSeoDescription();
+
+        // OG/Social prefer shorter description than Google (125-130)
+        return Str::limit($desc, 125);
     }
 
     /**
