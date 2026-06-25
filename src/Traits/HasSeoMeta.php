@@ -105,30 +105,47 @@ trait HasSeoMeta
         if ($this->seoMeta?->og_image) {
             $ogImage = $this->seoMeta->og_image;
             if (str_starts_with($ogImage, 'http')) {
-                return $ogImage;
+                return $this->cleanImageUrl($ogImage);
             }
+
+            $img = ltrim($ogImage, '/');
+
             if (class_exists('Bale\Emperan\Support\Cdn')) {
-                return \Bale\Emperan\Support\Cdn::url('thumbnails/' . $ogImage);
+                return $this->cleanImageUrl(\Bale\Emperan\Support\Cdn::url('thumbnails/' . $img));
             }
-            return $ogImage;
+            return $this->cleanImageUrl($ogImage);
         }
 
         // Fallback to thumbnail if exists
-        if (isset($this->thumbnail) && $this->thumbnail) {
+        if (! empty($this->thumbnail)) {
             // Check if it's already a full URL
             if (str_starts_with($this->thumbnail, 'http')) {
-                return $this->thumbnail;
+                return $this->cleanImageUrl($this->thumbnail);
             }
 
             // Fallback to CDN for thumbnails
-            // We keep the dependency on Bale\Emperan\Support\Cdn for now
-            // as it is likely present in the "bale" stack.
             if (class_exists('Bale\Emperan\Support\Cdn')) {
-                return \Bale\Emperan\Support\Cdn::url('thumbnails/' . $this->thumbnail);
+                return $this->cleanImageUrl(\Bale\Emperan\Support\Cdn::url('thumbnails/' . ltrim($this->thumbnail, '/')));
+            }
+
+            if (function_exists('cdn_asset')) {
+                return $this->cleanImageUrl(cdn_asset($this->thumbnail));
             }
         }
 
         return null;
+    }
+
+    /**
+     * Clean double slashes in URL except for protocol.
+     */
+    protected function cleanImageUrl(?string $url): ?string
+    {
+        if (! $url) {
+            return null;
+        }
+
+        return preg_replace('/([^:])(\/{2,})/', '$1/', $url);
     }
 
     /**
