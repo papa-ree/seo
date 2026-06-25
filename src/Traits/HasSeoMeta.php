@@ -145,7 +145,7 @@ trait HasSeoMeta
             return null;
         }
 
-        return preg_replace('/([^:])(\/{2,})/', '$1/', $url);
+        return preg_replace('#(?<!:)/+#', '/', $url);
     }
 
     /**
