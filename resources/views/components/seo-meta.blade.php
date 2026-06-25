@@ -25,7 +25,9 @@ Fallback values will be used if seo_meta is not set.
         $description = $model->getSeoDescription() ?: $defaultDescription;
         $ogTitle = $model->getOgTitle() ?: $title;
         $ogDescription = $model->getOgDescription() ?: $description;
-        $ogImage = $model->getOgImage() ?: $defaultImage;
+        // $ogImage = $model->getOgImage() ?: $defaultImage;
+        $getOgImage = $model->getOgImage();
+        $ogImage = !empty($getOgImage) ? $getOgImage : $defaultImage;
         $keywords = $model->getSeoKeywords() ?: $defaultKeywords;
         $canonical = $model->getCanonicalUrl() ?: url()->current();
         $robots = $model->getSeoRobots();
@@ -90,20 +92,20 @@ Fallback values will be used if seo_meta is not set.
 {{-- Structured Data (JSON-LD) --}}
 @if($structuredData)
     <script type="application/ld+json">
-            {!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
-            </script>
+                {!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+                </script>
 @elseif($model)
     <script type="application/ld+json">
-            {
-                "@@context": "https://schema.org",
-                "@@type": "Article",
-                "headline": "{!! addslashes($title) !!}",
-                "description": "{!! addslashes($description) !!}",
-                @if($ogImage)
-                    "image": "{{ $ogImage }}",
-                @endif
-                "url": "{{ url()->current() }}",
-                "dateModified": "{{ isset($model->updated_at) ? $model->updated_at : now()->toIso8601String() }}"
-            }
-            </script>
+                {
+                    "@@context": "https://schema.org",
+                    "@@type": "Article",
+                    "headline": "{!! addslashes($title) !!}",
+                    "description": "{!! addslashes($description) !!}",
+                    @if($ogImage)
+                        "image": "{{ $ogImage }}",
+                    @endif
+                    "url": "{{ url()->current() }}",
+                    "dateModified": "{{ isset($model->updated_at) ? $model->updated_at : now()->toIso8601String() }}"
+                }
+                </script>
 @endif
