@@ -25,11 +25,22 @@ Fallback values will be used if seo_meta is not set.
         $description = $model->getSeoDescription() ?: $defaultDescription;
         $ogTitle = $model->getOgTitle() ?: $title;
         $ogDescription = $model->getOgDescription() ?: $description;
-        // $ogImage = $model->getOgImage() ?: $defaultImage;
         $getOgImage = $model->getOgImage();
         $ogImage = !empty($getOgImage) ? $getOgImage : $defaultImage;
         $keywords = $model->getSeoKeywords() ?: $defaultKeywords;
-        $canonical = $model->getCanonicalUrl() ?: url()->current();
+        
+        $canonicalUrl = $model->getCanonicalUrl();
+        if ($canonicalUrl) {
+            $scheme = strtolower(parse_url($canonicalUrl, PHP_URL_SCHEME) ?? '');
+            if ($scheme && !in_array($scheme, ['http', 'https'])) {
+                $canonical = url()->current();
+            } else {
+                $canonical = $canonicalUrl;
+            }
+        } else {
+            $canonical = url()->current();
+        }
+        
         $robots = $model->getSeoRobots();
         $structuredData = $model->getStructuredData();
         $ogType = method_exists($model, 'getOgType') ? $model->getOgType() : 'website';
@@ -46,6 +57,14 @@ Fallback values will be used if seo_meta is not set.
         $structuredData = null;
         $ogType = 'website';
         $twitterCard = 'summary_large_image';
+    }
+
+    // Validate ogImage URL
+    if ($ogImage) {
+        $scheme = strtolower(parse_url($ogImage, PHP_URL_SCHEME) ?? '');
+        if ($scheme && !in_array($scheme, ['http', 'https'])) {
+            $ogImage = $defaultImage;
+        }
     }
 
     $siteName = config('seo.site_name', config('app.name'));
@@ -91,21 +110,21 @@ Fallback values will be used if seo_meta is not set.
 
 {{-- Structured Data (JSON-LD) --}}
 @if($structuredData)
-    <script type="application/ld+json">
-                {!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
-                </script>
+    <script type="application/ld+json" @if(function_exists('csp_nonce')) nonce="{{ csp_nonce() }}" @endif>
+    {!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
+    </script>
 @elseif($model)
-    <script type="application/ld+json">
-                {
-                    "@@context": "https://schema.org",
-                    "@@type": "Article",
-                    "headline": "{!! addslashes($title) !!}",
-                    "description": "{!! addslashes($description) !!}",
-                    @if($ogImage)
-                        "image": "{{ $ogImage }}",
-                    @endif
-                    "url": "{{ url()->current() }}",
-                    "dateModified": "{{ isset($model->updated_at) ? $model->updated_at : now()->toIso8601String() }}"
-                }
-                </script>
+    <script type="application/ld+json" @if(function_exists('csp_nonce')) nonce="{{ csp_nonce() }}" @endif>
+    {
+        "@@context": "https://schema.org",
+        "@@type": "Article",
+        "headline": {!! json_encode($title, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!},
+        "description": {!! json_encode($description, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!},
+        @if($ogImage)
+            "image": {!! json_encode($ogImage, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!},
+        @endif
+        "url": "{!! url()->current() !!}",
+        "dateModified": "{{ isset($model->updated_at) ? $model->updated_at : now()->toIso8601String() }}"
+    }
+    </script>
 @endif

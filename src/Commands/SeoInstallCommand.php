@@ -66,14 +66,28 @@ class SeoInstallCommand extends Command
         $envKey = 'SEO_USE_ROUTES';
         $envValue = $value ? 'true' : 'false';
 
-        if (File::exists($path)) {
-            $content = File::get($path);
-            if (str_contains($content, $envKey)) {
-                $content = preg_replace("/{$envKey}=.*/", "{$envKey}={$envValue}", $content);
+        if (!File::exists($path)) {
+            return;
+        }
+
+        // Create backup
+        @copy($path, $path . '.bak.' . date('YmdHis'));
+
+        $lock = fopen($path, 'r+');
+        if ($lock && flock($lock, LOCK_EX)) {
+            $content = file_get_contents($path);
+            $pattern = '/^' . preg_quote($envKey, '/') . '=.*/m';
+            if (preg_match($pattern, $content)) {
+                $content = preg_replace($pattern, "{$envKey}={$envValue}", $content);
             } else {
-                $content .= "\n{$envKey}={$envValue}\n";
+                $content = rtrim($content) . "\n{$envKey}={$envValue}\n";
             }
-            File::put($path, $content);
+            ftruncate($lock, 0);
+            rewind($lock);
+            fwrite($lock, $content);
+            fflush($lock);
+            flock($lock, LOCK_UN);
+            fclose($lock);
         }
     }
 }
