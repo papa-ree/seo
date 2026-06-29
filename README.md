@@ -4,7 +4,7 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/papa-ree/seo/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/papa-ree/seo/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![License](https://img.shields.io/github/license/papa-ree/seo?style=flat-square)](LICENSE.md)
 
-Bale SEO adalah package Laravel untuk mengelola metadata SEO, Open Graph, Twitter Cards, dan sitemap secara dinamis. Package ini dirancang untuk bekerja dengan ekosistem Bale (Emperan & CMS) namun tetap fleksibel untuk aplikasi Laravel lainnya.
+Bale SEO adalah package Laravel untuk mengelola metadata SEO, Open Graph, Twitter Cards, dan sitemap secara dinamis. Package ini dirancang untuk bekerja dengan ekosistem Bale (Umpak & CMS) namun tetap fleksibel untuk aplikasi Laravel lainnya.
 
 ## Fitur Utama
 
@@ -66,8 +66,8 @@ return [
 
     'sitemap' => [
         'models' => [
-            'post' => \Bale\Emperan\Models\Post::class,
-            'page' => \Bale\Emperan\Models\Page::class,
+            'post' => \Bale\Umpak\Models\Post::class,
+            'page' => \Bale\Umpak\Models\Page::class,
         ],
     ],
 ];

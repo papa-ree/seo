@@ -28,8 +28,8 @@ return [
      */
     'sitemap' => [
         'models' => [
-            'post' => \Bale\Emperan\Models\Post::class,
-            'page' => \Bale\Emperan\Models\Page::class,
+            'post' => \Bale\Umpak\Models\Post::class,
+            'page' => \Bale\Umpak\Models\Page::class,
         ],
     ],
 ];

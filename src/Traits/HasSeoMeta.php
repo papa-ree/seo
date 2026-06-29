@@ -110,10 +110,10 @@ trait HasSeoMeta
 
             $img = ltrim($ogImage, '/');
 
-            if (class_exists('Bale\Emperan\Support\Cdn')) {
-                return $this->cleanImageUrl(\Bale\Emperan\Support\Cdn::url('thumbnails/' . $img));
+            if (function_exists('cdn_asset')) {
+                return $this->cleanImageUrl(cdn_asset('thumbnails/' . $img));
             }
-            return $this->cleanImageUrl($ogImage);
+            return $this->cleanImageUrl(asset($ogImage));
         }
 
         // Fallback to thumbnail if exists
@@ -123,14 +123,11 @@ trait HasSeoMeta
                 return $this->cleanImageUrl($this->thumbnail);
             }
 
-            // Fallback to CDN for thumbnails
-            if (class_exists('Bale\Emperan\Support\Cdn')) {
-                return $this->cleanImageUrl(\Bale\Emperan\Support\Cdn::url('thumbnails/' . ltrim($this->thumbnail, '/')));
+            if (function_exists('cdn_asset')) {
+                return $this->cleanImageUrl(cdn_asset('thumbnails/' . ltrim($this->thumbnail, '/')));
             }
 
-            if (function_exists('cdn_asset')) {
-                return $this->cleanImageUrl(cdn_asset($this->thumbnail));
-            }
+            return $this->cleanImageUrl(asset($this->thumbnail));
         }
 
         return null;
