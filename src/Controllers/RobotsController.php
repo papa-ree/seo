@@ -54,6 +54,7 @@ class RobotsController extends Controller
 
 User-agent: *
 Allow: /
+Allow: /favicon.ico
 
 # Disallow admin and internal paths
 {$disallowStr}
@@ -65,7 +66,6 @@ Disallow: /password/*
 
 # Allow important resources
 Allow: /media/*
-Allow: /storage/*
 
 # Sitemap
 Sitemap: {$sitemapUrl}
